@@ -1,0 +1,50 @@
+\set ON_ERROR_STOP on
+begin;
+create function pg_temp.expect_denied(q text) returns boolean language plpgsql as $$begin execute q;return false;exception when insufficient_privilege then return true;end$$;
+do $$
+declare a uuid:='f0990000-0000-4000-8000-000000000001';p uuid:='f0990000-0000-4000-8000-000000000002';v jsonb;d jsonb;f jsonb;w text;
+begin
+ insert into auth.users(id,email,is_anonymous,email_confirmed_at) values(a,'admin-editor-fixture@example.test',false,now()),(p,'player-editor-fixture@example.test',false,now());
+ insert into private.game_admins values(a);
+ perform set_config('request.jwt.claim.sub',p::text,true);perform public.mmo_connect(gen_random_uuid(),'Player');
+ f:='{"farmLayout":{"house":{"x":7,"z":-2,"rotation":0},"portal":{"x":0,"z":12,"rotation":0},"pond":null,"trees":{},"buildings":{},"terrain":{},"decorations":{}},"soil":{},"plants":{},"choppedTrees":{},"growth":{"carrotSeconds":180,"treeSeconds":180,"eggSeconds":180},"chickens":[],"farmPausedAt":null}';
+ perform public.mmo_farm_publish(f);
+ perform set_config('request.jwt.claim.sub',a::text,true);perform public.mmo_connect(gen_random_uuid(),'Admin');perform public.mmo_farm_publish(f);
+ perform set_config('request.jwt.claim.sub',p::text,true);set local role authenticated;
+ if public.mmo_world_editor('role')->>'role'<>'player' then raise exception 'Player role wrong';end if;
+ if not pg_temp.expect_denied('select public.mmo_world_editor(''list'')') then raise exception 'Player can enumerate private farms';end if;
+ if not pg_temp.expect_denied(format('select public.mmo_world_editor(''read'',%L)','farm:'||a)) then raise exception 'Player can read another farm editor';end if;
+ v:=public.mmo_world_editor('read');
+ if not pg_temp.expect_denied(format('select public.mmo_world_editor(''save'',''town'',%L::jsonb,1)',v->'data')) then raise exception 'Player edits Town';end if;
+ if not pg_temp.expect_denied(format('select public.mmo_world_editor(''read'',%L)','house:'||a||':house')) then raise exception 'Player edits other house';end if;
+ if not pg_temp.expect_denied(format('insert into private.game_admins values(%L)',p)) then raise exception 'Player self-promotes';end if;
+ v:=public.mmo_world_editor('read','farm:'||p);perform public.mmo_world_editor('save','farm:'||p,v->'data',(v->>'version')::bigint);
+ d:='{"furniture":{},"catPositions":{}}';perform public.mmo_world_editor('save','house:'||p||':house',d,0);
+ reset role;
+ -- User-editable metadata cannot grant admin access.
+ update auth.users set raw_user_meta_data='{"role":"admin","is_admin":true}' where id=p;
+ set local role authenticated;
+ if public.mmo_world_editor('role')->>'role'<>'player' then raise exception 'Metadata granted admin';end if;
+ reset role;
+ perform set_config('request.jwt.claim.sub',a::text,true);set local role authenticated;
+ if public.mmo_world_editor('role')->>'role'<>'admin' then raise exception 'Admin role wrong';end if;
+ v:=public.mmo_world_editor('list');if jsonb_array_length(v)<2 then raise exception 'Admin cannot list farms';end if;
+ v:=public.mmo_world_editor('read','farm:'||p);v:=public.mmo_world_editor('save','farm:'||p,v->'data',(v->>'version')::bigint);
+ v:=public.mmo_world_editor('read','town');d:=jsonb_set(v->'data','{objects,h2h}','{"x":10,"z":5,"rotation":1}');
+ v:=public.mmo_world_editor('save','town',d,(v->>'version')::bigint);
+ begin perform public.mmo_world_editor('save','town',d,1);raise exception 'Stale edit accepted';exception when serialization_failure then null;end;
+ begin perform public.mmo_world_editor('save','town','{}',(v->>'version')::bigint);raise exception 'Bad town accepted';exception when raise_exception then if sqlerrm='Bad town accepted' then raise;end if;end;
+ v:=public.mmo_world_editor('save','house:'||p||':house','{"furniture":{},"catPositions":{}}',1);
+ reset role;
+ if not exists(select 1 from private.game_edit_audit where actor=a and world='town') then raise exception 'Missing edit audit';end if;
+ if private.mmo_town_segment_clear(10,5,10,5) then raise exception 'Town collision did not move';end if;
+ delete from private.game_admins where user_id=a;
+ set local role authenticated;
+ if public.mmo_world_editor('role')->>'role'<>'player' then raise exception 'Role revocation not immediate';end if;
+ if not pg_temp.expect_denied('select public.mmo_world_editor(''list'')') then raise exception 'Revoked admin still allowed';end if;
+ reset role;
+ perform set_config('request.jwt.claim.sub','',true);set local role authenticated;
+ if not pg_temp.expect_denied('select public.mmo_world_editor(''role'')') then raise exception 'Anonymous editor access';end if;
+ reset role;
+end$$;
+rollback;

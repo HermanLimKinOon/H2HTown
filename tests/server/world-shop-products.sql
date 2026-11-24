@@ -1,0 +1,42 @@
+\set ON_ERROR_STOP on
+begin;
+create function pg_temp.shop_denied(q text) returns boolean language plpgsql as $$begin execute q;return false;exception when insufficient_privilege then return true;end$$;
+do $$
+declare a uuid:='f0970000-0000-4000-8000-000000000001';p uuid:='f0970000-0000-4000-8000-000000000002';v jsonb;d jsonb;old_version bigint;new_id bigint;
+begin
+ insert into auth.users(id,email,is_anonymous,email_confirmed_at) values(a,'shop-admin-fixture@example.test',false,now()),(p,'shop-player-fixture@example.test',false,now());insert into private.game_admins values(a);
+ perform set_config('request.jwt.claim.sub',p::text,true);set local role authenticated;
+ v:=public.mmo_world_editor('shop_read','meadow');
+ if jsonb_array_length(v->'products')<1 then raise exception 'Missing seeded shop products';end if;
+ if not pg_temp.shop_denied(format('select public.mmo_world_editor(''shop_save'',''meadow'',%L::jsonb,%s)',v,v->>'version')) then raise exception 'Player can change shop products';end if;
+ if not pg_temp.shop_denied('select * from private.game_shop_catalog') then raise exception 'Player reads private config directly';end if;
+ reset role;
+ perform set_config('request.jwt.claim.sub',a::text,true);set local role authenticated;
+ v:=public.mmo_world_editor('shop_read','meadow');old_version:=(v->>'version')::bigint;d:=jsonb_set(v,'{products,0,buyPrice}','7');
+ v:=public.mmo_world_editor('shop_save','meadow',d,old_version);
+ if v->'products'->0->>'buyPrice'<>'7' then raise exception 'Shop price did not persist';end if;
+ begin perform public.mmo_world_editor('shop_save','meadow',d,old_version);raise exception 'Stale catalogue accepted';exception when serialization_failure then null;end;
+ d:=jsonb_set(v,'{products,0,image}','"javascript:alert(1)"');
+ begin perform public.mmo_world_editor('shop_save','meadow',d,(v->>'version')::bigint);raise exception 'Unsafe product image accepted';exception when raise_exception then if sqlerrm='Unsafe product image accepted' then raise;end if;end;
+ d:=jsonb_set(v,'{products,0,reference}','"admin-role"');
+ begin perform public.mmo_world_editor('shop_save','meadow',d,(v->>'version')::bigint);raise exception 'Unsupported inventory binding accepted';exception when raise_exception then if sqlerrm='Unsupported inventory binding accepted' then raise;end if;end;
+ v:=public.mmo_world_editor('shop_read','h2h');old_version:=(v->>'version')::bigint;
+ d:=jsonb_build_object('products',jsonb_build_array(jsonb_build_object('id','new-test-product','kind','website','reference','','name','Rollback fixture product','image','/game/items/carrot.svg','description','Test only','category','General','active',true,'buyPrice',1234,'sellPrice',null,'originalPrice',1500)));
+ v:=public.mmo_world_editor('shop_save','h2h',d,old_version);
+ reset role;
+ select id into new_id from public.products where name='Rollback fixture product';
+ if new_id is null or not exists(select 1 from public.products where id=new_id and member_price=1234 and original_price=1500) then raise exception 'H2H save did not update website products';end if;
+ update public.products set name='Website edited fixture' where id=new_id;
+ set local role authenticated;
+ begin perform public.mmo_world_editor('shop_save','h2h',d,(v->>'version')::bigint);raise exception 'External website edit did not invalidate catalogue';exception when serialization_failure then null;end;
+ v:=public.mmo_world_editor('shop_read','h2h');
+ d:=jsonb_build_object('products',jsonb_build_array(jsonb_build_object('id','website-'||new_id,'kind','website','reference',new_id::text,'name','Website edited fixture','image','/game/items/carrot.svg','description','Test only','category','General','active',false,'buyPrice',1234,'sellPrice',null,'originalPrice',1500)));
+ perform public.mmo_world_editor('shop_save','h2h',d,(v->>'version')::bigint);
+ reset role;
+ if not exists(select 1 from public.products where id=new_id and not active) then raise exception 'Product was not safely archived';end if;
+ if not exists(select 1 from private.game_edit_audit where actor=a and world='shop:h2h') then raise exception 'Shop edit missing audit';end if;
+ perform set_config('request.jwt.claim.sub',p::text,true);set local role authenticated;
+ v:=public.mmo_world_editor('shop_read','h2h');if exists(select 1 from jsonb_array_elements(v->'products') q where q->>'reference'=new_id::text) then raise exception 'Player sees archived product';end if;
+ reset role;
+end$$;
+rollback;

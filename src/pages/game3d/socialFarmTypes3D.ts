@@ -1,0 +1,13 @@
+import type { Game3DSave } from './game3d';
+import type { TownPeers3D, TownProfile3D, TownPose3D } from './townMultiplayer3D';
+import type { MmoPlayer3D } from './mmoCommunicationTypes3D';
+export type PlayerProfile3D=MmoPlayer3D&{bio:string;avatar:Partial<TownProfile3D>|null;friendship:'self'|'none'|'incoming'|'outgoing'|'friend'|'blocked'};
+export type SocialState3D={friends:MmoPlayer3D[];incoming:MmoPlayer3D[];outgoing:MmoPlayer3D[];farm_invitations:{id:string;owner_id:string;owner_name:string;expires_at:string}[];sent_invitations:{id:string;target_id:string;target_name:string;expires_at:string}[];visitors:{id:string;name:string;expires_at:string}[]};
+export type SharedFarmData3D=Pick<Game3DSave,'farmLayout'|'soil'|'plants'|'choppedTrees'|'growth'|'chickens'|'farmPausedAt'>;
+export type FarmSnapshot3D={owner_id:string;owner_name:string;version:number;server_now:string;harvested_carrots:number;snapshot:SharedFarmData3D;occupants:(TownPose3D&TownProfile3D)[]};
+export type FarmAction3D='dig'|'plant'|'water'|'harvest'|'restore';
+export type SocialFarmModel3D={status:'connecting'|'online'|'offline'|'error';error:string;busy:boolean;state:SocialState3D|null;profile:PlayerProfile3D|null;selfId:string|null;visiting:MmoPlayer3D|null;farm:FarmSnapshot3D|null;peers:TownPeers3D;
+ findPlayers:(query:string)=>Promise<MmoPlayer3D[]>;loadProfile:(id:string)=>Promise<void>;saveProfile:(bio:string)=>Promise<boolean>;
+ friend:(action:'request'|'accept'|'decline'|'cancel'|'remove',target:string)=>Promise<boolean>;
+ invite:(target:string)=>Promise<boolean>;respond:(id:string,accept:boolean)=>Promise<boolean>;revoke:(guest:string)=>Promise<boolean>;leave:()=>Promise<void>;refresh:()=>Promise<void>;clearError:()=>void;act:(action:FarmAction3D,tile:string)=>Promise<boolean>;
+};

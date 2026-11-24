@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 104" fill="none">
+<title>Wooden fence preview</title><rect width="128" height="104" rx="12" fill="#edf3e9"/>
+<ellipse cx="66" cy="87" rx="49" ry="9" fill="#829b72" opacity=".22"/>
+<path d="m22 39 82-17v10L22 49Zm0 27 82-17v10L22 76Z" fill="#b99a69"/>
+<path d="m22 39 82-17 7 4-82 17Zm0 27 82-17 7 4-82 17Z" fill="#dfcda9"/>
+<path d="m22 49 7 4 82-17V26l-7 6Zm0 27 7 4 82-17V53l-7 6Z" fill="#a68960"/>
+<path d="m19 20 10-2v72l-10 2Z" fill="#d9c39b"/><path d="m29 18 7 4v72l-7-4Z" fill="#ae9169"/><path d="m19 20 7-4 10 6-7 2Z" fill="#f0dfbd"/>
+<path d="m99 5 10-2v72l-10 2Z" fill="#d9c39b"/><path d="m109 3 7 4v72l-7-4Z" fill="#ae9169"/><path d="m99 5 7-4 10 6-7 2Z" fill="#f0dfbd"/>
+</svg>

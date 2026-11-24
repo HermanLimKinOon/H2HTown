@@ -1,0 +1,22 @@
+export const MMO_CHANNELS_3D=['local','world','party','guild','private'] as const;
+export type MmoChannel3D=typeof MMO_CHANNELS_3D[number];
+export type MmoMessage3D={id:string;channel:MmoChannel3D|'system';sender_id:string|null;sender_name:string;body:string;kind:'text'|'emote'|'announcement';created_at:string;group_id:string|null;recipient_id:string|null;world_id:string;server_id:string;origin:{x:number;z:number}|null;receivedAt?:number;pending?:boolean;failed?:boolean;nonce?:string};
+export type MmoPlayer3D={id:string;name:string;online?:boolean;world_id?:string};
+export type MmoPermissions3D={read:boolean;write:boolean;invite:boolean};
+export type MmoRole3D='owner'|'officer'|'member';
+export type MmoGroup3D={id:string;kind:'party'|'guild';name:string;role:MmoRole3D;permissions:Record<MmoRole3D,MmoPermissions3D>;my_permissions:MmoPermissions3D;members:(MmoPlayer3D&{role:MmoRole3D})[]};
+export type MmoInvite3D={id:string;group_id:string;kind:'party'|'guild';group_name:string;inviter_name:string;expires_at:string};
+export type MmoConversation3D={peer_id:string;peer_name:string;last_body:string;last_at:string;unread:number;online:boolean};
+export type MmoState3D={profile:MmoPlayer3D;config:{local_radius:number;max_length:number;preview_seconds?:number;retention_days?:number};groups:MmoGroup3D[];invitations:MmoInvite3D[];conversations:MmoConversation3D[];blocked:MmoPlayer3D[];unread_private:number};
+export type MmoPresence3D={x:number;z:number;accepted?:boolean;world_id:string;server_id:string;seq:number};
+export type MmoSocialAction3D={action:'create'|'invite'|'accept'|'decline'|'leave'|'kick'|'role'|'permissions'|'block'|'unblock';kind?:'party'|'guild';target?:string;name?:string;group?:string;role?:MmoRole3D;permissions?:Record<MmoRole3D,MmoPermissions3D>};
+export type MmoCommunicationModel3D={
+  status:'connecting'|'online'|'offline'|'error';error:string;state:MmoState3D|null;messages:MmoMessage3D[];
+  loadingHistory:boolean;hasMore:boolean;
+  send:(channel:MmoChannel3D,body:string,target?:string,kind?:'text'|'emote',nonce?:string)=>Promise<boolean>;
+  loadHistory:(channel:MmoChannel3D,target?:string,older?:boolean)=>Promise<void>;
+  markRead:(channel:MmoChannel3D,target?:string,through?:string)=>Promise<void>;
+  social:(action:MmoSocialAction3D)=>Promise<boolean>;
+  findPlayers:(query:string)=>Promise<MmoPlayer3D[]>;
+  retry:()=>void;clearError:()=>void;
+};

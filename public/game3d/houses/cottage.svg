@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 104" fill="none">
+  <title>Starter house preview</title>
+  <rect width="128" height="104" rx="12" fill="#edf3e9"/>
+  <ellipse cx="65" cy="87" rx="49" ry="10" fill="#829b72" opacity=".22"/>
+  <path d="M19 39 64 56v36L19 74Z" fill="#d6c8ad"/>
+  <path d="m64 56 45-17v35L64 92Z" fill="#f6eee0"/>
+  <path d="m8 35 56 23L120 35 64 13Z" fill="#b9483f"/>
+  <path d="M64 7 8 35l56 23Z" fill="#d55245"/>
+  <path d="M64 7v51l56-23Z" fill="#ea7765"/>
+  <path d="m8 35 56 23v5L8 40Z" fill="#f7e6d3"/>
+  <path d="m64 58 56-23v5L64 63Z" fill="#fff3e3"/>
+  <path d="m78 65 13-5v21l-13 5Z" fill="#71472e"/>
+  <path d="m28 48 14 6v14l-14-6Z" fill="#8bd3d1" stroke="#fff6e4" stroke-width="2"/>
+  <path d="m96 55 8-3v10l-8 3Z" fill="#8bd3d1" stroke="#fff6e4" stroke-width="1.5"/>
+  <path d="m33 38 21 9v6l-21-9Z" fill="#5c8c77"/>
+  <circle cx="88" cy="73" r="1.2" fill="#dfbf7c"/>
+</svg>

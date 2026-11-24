@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 96">
+  <path fill="#263d38" opacity=".22" d="M7 33h107v60H7z"/>
+  <path fill="#f2e3c5" d="M10 28h100v61H10z"/>
+  <path fill="#ef6f61" d="M3 31 60 2l57 29z"/>
+  <path fill="#b94f49" d="M17 31h86v9H17z"/>
+  <path fill="#55b7ad" d="M16 45h25v23H16zM79 45h25v23H79z"/>
+  <path fill="#d8f4eb" d="M19 48h19v17H19zM82 48h19v17H82z"/>
+  <path fill="#76503b" d="M49 58h22v31H49z"/>
+  <circle cx="66" cy="74" r="2" fill="#f4cc64"/>
+  <rect x="34" y="13" width="52" height="20" rx="2" fill="#263d38" stroke="#f4cc64" stroke-width="2"/>
+  <text x="60" y="27" text-anchor="middle" font-family="Arial,sans-serif" font-size="14" font-weight="700" fill="#fff4d4">H2H</text>
+</svg>

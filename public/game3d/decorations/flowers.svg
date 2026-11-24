@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 104" fill="none">
+<title>Flower bed preview</title><rect width="128" height="104" rx="12" fill="#edf3e9"/>
+<ellipse cx="65" cy="89" rx="49" ry="9" fill="#829b72" opacity=".22"/>
+<path d="m13 68 51-22 51 22-51 24Z" fill="#805c40"/><path d="m13 68 51 24v9L13 77Z" fill="#6f513b"/><path d="m64 92 51-24v9l-51 24Z" fill="#98714f"/>
+<path d="M35 74V44m21 38V50m22 23V40m20 28V35M56 57V25m21 28V21" stroke="#407347" stroke-width="3" stroke-linecap="round"/>
+<path d="m35 65-9-8m30 16 9-8m13-3-8-6m28 2 8-6m-50-7-8-7m29 6 8-6" stroke="#5e9a57" stroke-width="3" stroke-linecap="round"/>
+<g fill="#f6b4c8"><circle cx="35" cy="42" r="10"/><circle cx="78" cy="38" r="10"/></g>
+<g fill="#e4d0f1"><circle cx="56" cy="48" r="10"/><circle cx="98" cy="33" r="10"/></g>
+<g fill="#f7d984"><circle cx="56" cy="23" r="10"/><circle cx="77" cy="19" r="10"/></g>
+<g fill="#e6a645"><circle cx="35" cy="42" r="3"/><circle cx="78" cy="38" r="3"/><circle cx="56" cy="48" r="3"/><circle cx="98" cy="33" r="3"/><circle cx="56" cy="23" r="3"/><circle cx="77" cy="19" r="3"/></g>
+</svg>

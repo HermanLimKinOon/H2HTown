@@ -1,0 +1,7 @@
+# Town editor parity
+
+Replace coordinate sidebar with farm-style object selection, contextual Move/Rotate/Delete menu, hover outlines, faded cursor-following previews, grid snapping, undo/cancel/save, R/Esc and WASD/QE/scroll/right-drag editing camera. Add an extensible replaceable building catalogue with cottage, market and community hall. Persist bounded catalogue-backed buildings through the admin-only versioned Town API; update shared rendering, SQL collisions and Colyseus. Preserve the non-deletable travel portal, allow shop deletion as requested. Keep 2D and commits unchanged.
+
+Verified: 295 JS tests, frontend/server TypeScript, scoped lint and friends build pass. SQL tests cover new buildings, collisions, deletion, protected portal, unknown styles, bounds, overlaps, admin-only writes and old-payload protection; existing MMO/room authorization regressions pass. Browser verified click-on-model menu, rotation, moving, delete, undo, creation, save, refresh persistence, ghost following cursor, Escape cancellation and clean placement feedback. One example cottage saved globally at (17,-5), rotation 1; original shops unchanged. Background gameplay labels hidden while admin tools are open. No 2D changes or commits. Current link in .local/friends-session.json. Screenshots: /private/tmp/h2h-town-editor-controls.png and /private/tmp/h2h-town-editor-preview.png.
+
+Final cleanup verified: temporary admin role revoked, fixture signed out, credential file removed, test@gmail.com remains game admin, shared building count is one.

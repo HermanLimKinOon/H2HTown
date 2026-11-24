@@ -1,0 +1,4 @@
+{
+ "compilerOptions":{"target":"ES2022","module":"ESNext","moduleResolution":"bundler","lib":["ES2022","DOM"],"types":["node"],"strict":true,"strictNullChecks":false,"noImplicitAny":false,"skipLibCheck":true,"noEmit":true,"allowImportingTsExtensions":true,"esModuleInterop":true},
+ "include":["server/colyseus/**/*.ts"]
+}

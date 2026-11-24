@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 104" fill="none">
+<title>Wooden bench preview</title><rect width="128" height="104" rx="12" fill="#edf3e9"/>
+<ellipse cx="65" cy="89" rx="49" ry="9" fill="#829b72" opacity=".22"/>
+<path d="m23 58 8 4v28l-8-4Zm64-15 8 4v29l-8-4ZM49 72l8 4v23l-8-4Zm56-19 8 4v24l-8-4Z" fill="#40534b"/>
+<path d="m19 27 70-18v32L19 59Z" fill="#b98353"/><path d="m89 9 8 5v32l-8-5Z" fill="#885333"/>
+<path d="m19 27 70-18 8 5-70 18Z" fill="#d5a578"/>
+<path d="m19 59 70-18 26 16-70 20Z" fill="#c18b5b"/>
+<path d="m19 59 26 18v7L19 67Z" fill="#96603e"/><path d="m45 77 70-20v7L45 84Z" fill="#ac7044"/>
+<path d="m27 63 70-19m-62 25 70-19" stroke="#e0b388" stroke-width="1.5" opacity=".75"/>
+</svg>

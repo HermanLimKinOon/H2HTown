@@ -1,0 +1,8 @@
+import test from 'node:test';import assert from 'node:assert/strict';import ts from 'typescript';import {readFile} from 'node:fs/promises';
+const js=ts.transpileModule(await readFile(new URL('../src/pages/game3d/merchantReview3D.ts',import.meta.url),'utf8'),{compilerOptions:{module:ts.ModuleKind.ESNext}}).outputText;
+const model=await import('data:text/javascript;base64,'+Buffer.from(js).toString('base64'));
+const apps=[{id:'east-rejected',applicant:'same-owner',status:'rejected',details:{plot:'building-1'}},{id:'west',applicant:'same-owner',status:'pending',details:{plot:'building-2'}},{id:'east-pending',applicant:'same-owner',status:'pending',details:{plot:'building-1'}},{id:'legacy',applicant:'same-owner',status:'pending',details:{}}];
+test('clicking a plot exposes only applications requesting that plot',()=>{assert.deepEqual(model.plotApplications3D(apps,'building-1').map(a=>a.id),['east-rejected','east-pending']);assert.deepEqual(model.plotApplications3D(apps,'building-1','pending').map(a=>a.id),['east-pending']);assert.deepEqual(model.plotApplications3D(apps,'building-3'),[]);assert.equal(model.plotApplications3D(apps,null).length,4);});
+test('review selection stays within the clicked plot and prioritizes waiting applicants',()=>{const east=model.plotApplications3D(apps,'building-1');assert.equal(model.selectedPlotApplication3D(east,'west').id,'east-pending');assert.equal(model.selectedPlotApplication3D(east,'east-rejected').id,'east-rejected');assert.equal(model.selectedPlotApplication3D([],''),undefined);});
+
+test('multiple shops from one owner remain independently selectable',()=>{assert.equal(model.selectedPlotApplication3D(apps,'west').id,'west');assert.equal(model.selectedPlotApplication3D(apps,'east-pending').id,'east-pending');});
